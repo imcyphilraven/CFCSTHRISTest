@@ -18,7 +18,7 @@ namespace HRIS.Domain.Entities.Domain.HRIS
 
         public DateTime BirthDate { get; set; }
         public string BirthPlace { get; set; } = string.Empty;
-        public char SexAtBirth { get; set; }
+        public string SexAtBirth { get; set; } = null!;
 
         public int CivilStatusID { get; set; }      // FK
         public bool IsFilipino { get; set; }
@@ -27,7 +27,7 @@ namespace HRIS.Domain.Entities.Domain.HRIS
 
 
         // Navigation Properties
-        public CivilStatus? CiviStatus { get; set; }
+        public CivilStatus? CivilStatus { get; set; }
         public ICollection<EmployeeIdentification> EmployeeIdentifications { get; set; } = new List<EmployeeIdentification>();
 
     }
