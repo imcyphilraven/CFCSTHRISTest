@@ -35,6 +35,20 @@ namespace HRIS.Domain.Entities.Common
         public DateTimeOffset? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
+
+
+        public void SoftDelete(string? user = null)
+        {
+            IsActive = false;
+            DeletedBy = user;
+            DeletedDate = DateTimeOffset.UtcNow;
+        }
+
+        public void MarkUpdated(string? user = null)
+        {
+            UpdatedBy = user;
+            UpdatedDate = DateTimeOffset.UtcNow;
+        }
     }
 }

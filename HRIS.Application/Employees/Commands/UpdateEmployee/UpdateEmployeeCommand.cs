@@ -1,21 +1,23 @@
-﻿using HRIS.Domain.Entities.Common;
-using HRIS.Domain.Entities.Domain.Lookup;
+﻿using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRIS.Domain.Entities.Domain.HRIS
+namespace HRIS.Application.Employees.Commands.UpdateEmployee
 {
-    public class Employee : BaseAuditableEntity
+    public class UpdateEmployeeCommand : IRequest<bool>
     {
         public Guid EmployeeID { get; set; }
+
+        // Add other properties to be updated here
         public string EmploymentID { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string? MiddleName { get; set; }
         public string LastName { get; set; } = null!;
         public string? ExtensionName { get; set; }
+
 
         public DateTime BirthDate { get; set; }
         public string BirthPlace { get; set; } = null!;
@@ -26,10 +28,6 @@ namespace HRIS.Domain.Entities.Domain.HRIS
         public bool IsDualCitizen { get; set; }
         public string? ImageSource { get; set; }
 
-
-        // Navigation Properties
-        public CivilStatus? CivilStatus { get; set; }
-        public ICollection<EmployeeIdentification> EmployeeIdentifications { get; set; } = new List<EmployeeIdentification>();
 
     }
 }
