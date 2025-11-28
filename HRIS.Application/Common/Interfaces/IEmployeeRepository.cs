@@ -21,5 +21,16 @@ namespace HRIS.Application.Common.Interfaces
 
         Task SoftDeleteAsync(Employee employee, CancellationToken cancellationToken);
 
+
+        // Additional methods can be added as needed
+        // Paged Methods:
+        Task<(IReadOnlyCollection<Employee> Items, int TotalCount)> GetPagedAsync(
+            int pageNumber, 
+            int pageSize, 
+            string? searchTerm,
+            bool? isActive,
+            string? sortBy,
+            bool isDescending,
+            CancellationToken cancellationToken);
     }
 }

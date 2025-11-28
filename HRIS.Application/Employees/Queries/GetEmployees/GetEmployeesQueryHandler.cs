@@ -1,4 +1,5 @@
 ﻿using HRIS.Application.Common.Interfaces;
+using HRIS.Application.Common.Model;
 using HRIS.Application.DTOs;
 using MediatR;
 using System;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace HRIS.Application.Employees.Queries.GetEmployees
 {
-    public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, IReadOnlyCollection<EmployeeDTO>>
+    //public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, IReadOnlyCollection<EmployeeDTO>>
+    public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, PagedResult<EmployeeDTO>>
     {
         private readonly IEmployeeRepository _employeeRepository;
         public GetEmployeesQueryHandler(IEmployeeRepository employeeRepository)
@@ -17,13 +19,22 @@ namespace HRIS.Application.Employees.Queries.GetEmployees
            _employeeRepository = employeeRepository;
         }
 
-        public async Task<IReadOnlyCollection<EmployeeDTO>> Handle(
-                GetEmployeesQuery request, 
+        public async Task<PagedResult<EmployeeDTO>> Handle(
+                GetEmployeesQuery request,
                 CancellationToken cancellationToken
         )
         {
-            var employees = await _employeeRepository.GetAllAsync(cancellationToken);
-            
+
+            var (employees, totalCount) = await _employeeRepository.GetPagedAsync(
+                request.PageNumber,
+                request.PageSize,
+                request.SearchTerm,
+                request.IsActive,
+                request.SortBy,
+                request.IsDescending,
+                cancellationToken
+            );
+
             // Map Employee entities to EmployeeDTOs
             var employeeDTOs = employees.Select(e => new EmployeeDTO
             {
@@ -41,11 +52,47 @@ namespace HRIS.Application.Employees.Queries.GetEmployees
                 ImageSource = e.ImageSource,
                 // Map other properties as needed
             })
-                .ToList()
-                .AsReadOnly();
+            .ToList()
+            .AsReadOnly();
 
-
-            return employeeDTOs;
+            return new PagedResult<EmployeeDTO>
+            {
+                Items = employeeDTOs,
+                TotalCount = totalCount,
+                PageSize = request.PageSize,
+                PageNumber = request.PageNumber
+            };
         }
+
+        //public async Task<IReadOnlyCollection<EmployeeDTO>> Handle(
+        //        GetEmployeesQuery request, 
+        //        CancellationToken cancellationToken
+        //)
+        //{
+        //    var employees = await _employeeRepository.GetAllAsync(cancellationToken);
+            
+        //    // Map Employee entities to EmployeeDTOs
+        //    var employeeDTOs = employees.Select(e => new EmployeeDTO
+        //    {
+        //        EmploymentId = e.EmploymentID,
+        //        FirstName = e.FirstName,
+        //        MiddleName = e.MiddleName,
+        //        LastName = e.LastName,
+        //        ExtensionName = e.ExtensionName,
+        //        BirthDate = e.BirthDate,
+        //        BirthPlace = e.BirthPlace,
+        //        SexAtBirth = e.SexAtBirth,
+        //        CivilStatusID = e.CivilStatusID,
+        //        IsFilipino = e.IsFilipino,
+        //        IsDualCitizen = e.IsDualCitizen,
+        //        ImageSource = e.ImageSource,
+        //        // Map other properties as needed
+        //    })
+        //        .ToList()
+        //        .AsReadOnly();
+
+
+        //    return employeeDTOs;
+        //}
     }
 }

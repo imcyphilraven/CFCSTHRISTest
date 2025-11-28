@@ -11,9 +11,9 @@ namespace HRIS.Application.DTOs
         public Guid EmployeeId { get; set; }
         public string EmploymentId { get; set; } = null!;
         public string FirstName { get; set; } = null!;
-        public string MiddleName { get; set; } = null!;
+        public string? MiddleName { get; set; }
         public string LastName { get; set; } = null!;
-        public string ExtensionName { get; set; } = null!;
+        public string? ExtensionName { get; set; }
 
         public DateTime BirthDate { get; set; }
         public string BirthPlace { get; set; } = null!;
@@ -22,6 +22,6 @@ namespace HRIS.Application.DTOs
         public int CivilStatusID { get; set; }      // FK
         public bool IsFilipino { get; set; }
         public bool IsDualCitizen { get; set; }
-        public string ImageSource { get; set; } = string.Empty;
+        public string? ImageSource { get; set; }
     }
 }

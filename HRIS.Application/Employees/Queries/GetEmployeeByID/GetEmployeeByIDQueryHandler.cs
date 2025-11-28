@@ -30,6 +30,7 @@ namespace HRIS.Application.Employees.Queries.GetEmployeeByID
                 EmployeeId = employee.EmployeeID,
                 EmploymentId = employee.EmploymentID,
                 FirstName =  employee.FirstName,
+
                 MiddleName = employee.MiddleName,
                 LastName = employee.LastName,
                 ExtensionName = employee.ExtensionName,

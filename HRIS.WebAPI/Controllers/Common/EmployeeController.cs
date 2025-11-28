@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using HRIS.Application.Common.Model;
 
 
 
@@ -28,14 +29,25 @@ namespace HRIS.WebAPI.Controllers.Common
         }
 
         // Query: Get All
+        //[HttpGet]
+        //public async Task<ActionResult<IReadOnlyCollection<EmployeeDTO>>> GetAllEmployees(
+        //    CancellationToken cancellationToken)
+        //{
+        //    var result = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
+
+        //    return Ok(result);
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyCollection<EmployeeDTO>>> GetAllEmployees(
+        public async Task<ActionResult<PagedResult<EmployeeDTO>>> GetAllEmployees(
+            [FromQuery] GetEmployeesQuery query,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
-
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
+
+
 
         [HttpGet("{employeeId:guid}")]
         public async Task<ActionResult<EmployeeDTO>> GetEmployeeById(

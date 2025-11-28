@@ -67,7 +67,66 @@ namespace HRIS.Infrastructure.Repositories.HRIS
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+        // Filtering , Sorting, and Pagination
+        public async Task<(IReadOnlyCollection<Employee> Items, int TotalCount)> GetPagedAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            bool? isActive,
+            string? sortBy,
+            bool isDescending,
+            CancellationToken cancellationToken)
+        {
+            var query = _context.Employees
+                .Include(e => e.CivilStatus)
+                .AsQueryable();
 
+
+            // Filtering
+
+            // active/inactive/all
+            if (isActive.HasValue)
+            {
+                query = query.Where(e => e.IsActive == isActive.Value);
+            }
+            // search term
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(e =>
+                    e.FirstName.Contains(searchTerm) ||
+                    e.LastName.Contains(searchTerm) ||
+                    e.EmploymentID.Contains(searchTerm));
+            }
+
+            // Total Count before Pagination
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                query = sortBy.ToLower() switch
+                {
+                    "employmentid" => isDescending 
+                        ? query.OrderByDescending(e => e.EmploymentID) 
+                        : query.OrderBy(e => e.EmploymentID),
+                    
+
+                    "lastname" => isDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
+
+                    _ => query.OrderBy(e => e.LastName), // Default sorting
+                };
+            }
+            
+            // Pagination
+            var skip = (pageNumber - 1) * pageSize;
+            var items = await query
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+
+            return (items.AsReadOnly(), totalCount);
+        }
 
     }
 }
