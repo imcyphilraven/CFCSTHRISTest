@@ -1,6 +1,7 @@
 ﻿using HRIS.Application.Common.Interfaces;
 using HRIS.Application.Common.Model;
 using HRIS.Application.DTOs;
+using HRIS.Application.Employees.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace HRIS.Application.Employees.Queries.GetEmployees
 {
     //public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, IReadOnlyCollection<EmployeeDTO>>
-    public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, PagedResult<EmployeeDTO>>
+    public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, PagedResult<EmployeeListDTO>>
     {
         private readonly IEmployeeRepository _employeeRepository;
         public GetEmployeesQueryHandler(IEmployeeRepository employeeRepository)
@@ -19,12 +20,12 @@ namespace HRIS.Application.Employees.Queries.GetEmployees
            _employeeRepository = employeeRepository;
         }
 
-        public async Task<PagedResult<EmployeeDTO>> Handle(
+        public async Task<PagedResult<EmployeeListDTO>> Handle(
                 GetEmployeesQuery request,
                 CancellationToken cancellationToken
         )
         {
-
+                
             var (employees, totalCount) = await _employeeRepository.GetPagedAsync(
                 request.PageNumber,
                 request.PageSize,
@@ -36,7 +37,7 @@ namespace HRIS.Application.Employees.Queries.GetEmployees
             );
 
             // Map Employee entities to EmployeeDTOs
-            var employeeDTOs = employees.Select(e => new EmployeeDTO
+            var employeeListDTOs = employees.Select(e => new EmployeeListDTO
             {
                 EmploymentId = e.EmploymentID,
                 FirstName = e.FirstName,
@@ -55,9 +56,9 @@ namespace HRIS.Application.Employees.Queries.GetEmployees
             .ToList()
             .AsReadOnly();
 
-            return new PagedResult<EmployeeDTO>
+            return new PagedResult<EmployeeListDTO>
             {
-                Items = employeeDTOs,
+                Items = employeeListDTOs,
                 TotalCount = totalCount,
                 PageSize = request.PageSize,
                 PageNumber = request.PageNumber

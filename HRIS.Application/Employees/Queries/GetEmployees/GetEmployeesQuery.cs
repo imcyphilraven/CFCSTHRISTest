@@ -1,5 +1,5 @@
 ﻿using HRIS.Application.Common.Model;
-using HRIS.Application.DTOs;
+using HRIS.Application.Employees.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace HRIS.Application.Employees.Queries.GetEmployees
 {
-    public class GetEmployeesQuery : IRequest<PagedResult<EmployeeDTO>>           //IRequest<IReadOnlyCollection<EmployeeDTO>>
+    public class GetEmployeesQuery : IRequest<PagedResult<EmployeeListDTO>>           
+        //IRequest<IReadOnlyCollection<EmployeeDTO>>
     {
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;

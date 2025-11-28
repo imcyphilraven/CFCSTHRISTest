@@ -1,10 +1,11 @@
 ﻿using HRIS.Application.Common.Interfaces;
-using HRIS.Application.DTOs;
 using HRIS.Application.Employees.Queries.GetEmployees;
 using HRIS.Application.Employees.Queries.GetEmployeeByID;
 using HRIS.Application.Employees.Commands.CreateEmployee;
 using HRIS.Application.Employees.Commands.DeleteEmployee;
 using HRIS.Application.Employees.Commands.UpdateEmployee;
+using HRIS.Application.Employees.DTOs;
+
 
 using System.Collections.Generic;
 using System.Threading;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using HRIS.Application.Common.Model;
+using HRIS.WebAPI.Contracts.Employee;
+
 
 
 
@@ -28,18 +31,9 @@ namespace HRIS.WebAPI.Controllers.Common
             _mediator = mediator;
         }
 
-        // Query: Get All
-        //[HttpGet]
-        //public async Task<ActionResult<IReadOnlyCollection<EmployeeDTO>>> GetAllEmployees(
-        //    CancellationToken cancellationToken)
-        //{
-        //    var result = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
-
-        //    return Ok(result);
-        //}
-
+        // Query: Get all with pagination
         [HttpGet]
-        public async Task<ActionResult<PagedResult<EmployeeDTO>>> GetAllEmployees(
+        public async Task<ActionResult<PagedResult<EmployeeListDTO>>> GetAllEmployees(
             [FromQuery] GetEmployeesQuery query,
             CancellationToken cancellationToken)
         {
@@ -48,9 +42,9 @@ namespace HRIS.WebAPI.Controllers.Common
         }
 
 
-
+        // Query: Get by ID
         [HttpGet("{employeeId:guid}")]
-        public async Task<ActionResult<EmployeeDTO>> GetEmployeeById(
+        public async Task<ActionResult<EmployeeDetailDTO>> GetEmployeeById(
             Guid employeeId, 
             CancellationToken cancellationToken)
         {
@@ -70,9 +64,25 @@ namespace HRIS.WebAPI.Controllers.Common
         // Command: Create
         [HttpPost]
         public async Task<IActionResult> CreateEmployee(
-            [FromBody] CreateEmployeeCommand command, 
+            [FromBody] CreateEmployeeRequest request, 
             CancellationToken cancellationToken)
         {
+            var command = new CreateEmployeeCommand
+            {
+                EmploymentId = request.EmploymentID,
+                FirstName = request.FirstName,
+                MiddleName = request.MiddleName,
+                LastName = request.LastName,
+                ExtensionName = request.ExtensionName,
+                BirthDate = request.BirthDate,
+                BirthPlace = request.BirthPlace,
+                SexAtBirth = request.SexAtBirth,
+                CivilStatusId = request.CivilStatusID,
+                IsFilipino = request.IsFilipino,
+                IsDualCitizen = request.IsDualCitizen,
+                ImageSource = request.ImageSource
+            };
+
             var employeeId = await _mediator.Send(command, cancellationToken);
 
             return Ok(employeeId);
@@ -82,13 +92,31 @@ namespace HRIS.WebAPI.Controllers.Common
         [HttpPut("{employeeId:guid}")]
         public async Task<IActionResult> UpdateEmployee(
             Guid employeeId, 
-            [FromBody] UpdateEmployeeCommand command, 
+            [FromBody] UpdateEmployeeRequest request, 
             CancellationToken cancellationToken)
         {
-            if (employeeId != command.EmployeeID)
+            if (employeeId != request.EmployeeID)
             {
                 return BadRequest();
             }
+
+            var command = new UpdateEmployeeCommand
+            {
+                EmployeeID = request.EmployeeID,
+                EmploymentID = request.EmploymentID,
+                FirstName = request.FirstName,
+                MiddleName = request.MiddleName,
+                LastName = request.LastName,
+                ExtensionName = request.ExtensionName,
+                BirthDate = request.BirthDate,
+                BirthPlace = request.BirthPlace,
+                SexAtBirth = request.SexAtBirth,
+                CivilStatusID = request.CivilStatusID,
+                IsFilipino = request.IsFilipino,
+                IsDualCitizen = request.IsDualCitizen,
+                ImageSource = request.ImageSource
+            };
+
             var result = await _mediator.Send(command, cancellationToken);
             if (!result)
             {
@@ -117,69 +145,5 @@ namespace HRIS.WebAPI.Controllers.Common
 
             return NoContent();
         }
-
-
-
-        //private readonly IEmployeeRepository _employeeRepository;
-
-        //public EmployeeController(IEmployeeRepository employeeRepository)
-        //{
-        //    _employeeRepository = employeeRepository;
-        //}
-
-        // READ
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllEmployees(CancellationToken cancellationToken)
-        //{
-        //    var employees = await _employeeRepository.GetAllAsync(cancellationToken);
-        //    return Ok(employees);
-        //}
-
-        //[HttpGet("{employeeId}")]
-        //public async Task<IActionResult> GetEmployeeById(Guid employeeId, CancellationToken cancellationToken)
-        //{
-        //    var employee = await _employeeRepository.GetByIdAsync(employeeId, cancellationToken);
-        //    if (employee == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(employee);
-        //}
-
-        //// WRITE
-        //[HttpPost]
-        //public async Task<IActionResult> CreateEmployee([FromBody] HRIS.Domain.Entities.Domain.HRIS.Employee employee, CancellationToken cancellationToken)
-        //{
-        //    var createdEmployee = await _employeeRepository.AddAsync(employee, cancellationToken);
-        //    return CreatedAtAction(nameof(GetEmployeeById), new { employeeId = createdEmployee.EmployeeID }, createdEmployee);
-        //}
-
-        //[HttpPut("{employeeId}")]
-        //public async Task<IActionResult> UpdateEmployee(Guid employeeId, [FromBody] HRIS.Domain.Entities.Domain.HRIS.Employee employee, CancellationToken cancellationToken)
-        //{
-        //    if (employeeId != employee.EmployeeID)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    await _employeeRepository.UpdateAsync(employee, cancellationToken);
-        //    return NoContent();
-        //}
-
-        //[HttpDelete("{employeeId}")]
-        //public async Task<IActionResult> DeleteEmployee(Guid employeeId, CancellationToken cancellationToken)
-        //{
-        //    var employee = await _employeeRepository.GetByIdAsync(employeeId, cancellationToken);
-        //    if (employee == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    // Additional checks for related data can be added here
-        //    // employee.IsActive = true; 
-
-        //    await _employeeRepository.UpdateAsync(employee, cancellationToken);
-        //    return NoContent();
-        //}
-
     }
 }

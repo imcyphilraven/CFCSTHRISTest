@@ -1,5 +1,6 @@
 ﻿using HRIS.Application.Common.Interfaces;
 using HRIS.Application.DTOs;
+using HRIS.Application.Employees.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HRIS.Application.Employees.Queries.GetEmployeeByID
 {
-    public class GetEmployeeByIDQueryHandler : IRequestHandler<GetEmployeeByIDQuery, EmployeeDTO?>
+    public class GetEmployeeByIDQueryHandler : IRequestHandler<GetEmployeeByIDQuery, DTOs.EmployeeDetailDTO?>
     {
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -18,14 +19,14 @@ namespace HRIS.Application.Employees.Queries.GetEmployeeByID
             _employeeRepository = employeeRepository;
         }
 
-        public async Task<EmployeeDTO?> Handle(GetEmployeeByIDQuery request, CancellationToken cancellationToken)
+        public async Task<DTOs.EmployeeDetailDTO?> Handle(GetEmployeeByIDQuery request, CancellationToken cancellationToken)
         {
             var employee = await _employeeRepository.GetByIdAsync(request.EmployeeID, cancellationToken);
             if (employee == null)
             {
                 return null;
             }
-            var employeeDTO = new EmployeeDTO
+            var employeeDetailDTO = new DTOs.EmployeeDetailDTO
             {
                 EmployeeId = employee.EmployeeID,
                 EmploymentId = employee.EmploymentID,
@@ -42,7 +43,7 @@ namespace HRIS.Application.Employees.Queries.GetEmployeeByID
                 IsDualCitizen = employee.IsDualCitizen,
                 ImageSource = employee.ImageSource
             };
-            return employeeDTO;
+            return employeeDetailDTO;
         }
     }
 }
