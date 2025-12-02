@@ -14,6 +14,7 @@ namespace HRIS.Application.Common.Interfaces
         Task<Employee?> GetByIdAsync(Guid employeeId, CancellationToken cancellationToken);
         Task<IReadOnlyCollection<Employee>> GetAllAsync(CancellationToken cancellationToken);
 
+
         // WRITE
         Task<Employee> AddAsync(Employee employee, CancellationToken cancellationToken);
         Task UpdateAsync(Employee employee, CancellationToken cancellationToken);
@@ -31,6 +32,13 @@ namespace HRIS.Application.Common.Interfaces
             bool? isActive,
             string? sortBy,
             bool isDescending,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken
+        );
+
+        Task<Employee?> GetEmployeeByIDIncludingInactiveAsync(
+            Guid employeeID,
+            CancellationToken cancellationToken
+        );
+        
     }
 }

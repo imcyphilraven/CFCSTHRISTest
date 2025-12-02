@@ -123,5 +123,16 @@ namespace HRIS.Infrastructure.Repositories.HRIS
             return (items.AsReadOnly(), totalCount);
         }
 
+        // GET BY ID INCLUDING INACTIVE 
+        public async Task<Employee?> GetEmployeeByIDIncludingInactiveAsync(
+            Guid employeeID, CancellationToken cancellationToken
+        )
+        {
+            return await _context.Employees
+                .IgnoreQueryFilters()
+                .Include(e => e.CivilStatus)
+                .FirstOrDefaultAsync(e=> e.EmployeeID == employeeID, cancellationToken);
+        }
+
     }
 }

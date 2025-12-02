@@ -22,7 +22,7 @@ namespace HRIS.Application.Employees.Commands.ReactivateEmployee
             CancellationToken cancellationToken
         )
         {
-            var employee = await _employeeRepository.GetByIdAsync(request.EmployeeID, cancellationToken);
+            var employee = await _employeeRepository.GetEmployeeByIDIncludingInactiveAsync(request.EmployeeID, cancellationToken);
             if (employee == null)
             {
                 return false;   // Employee not found
