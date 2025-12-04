@@ -23,16 +23,16 @@ namespace HRIS.Application.Employees.Commands.CreateEmployee
                 EmployeeID = Guid.NewGuid(),
                 EmploymentID = request.EmploymentId,
                 FirstName = request.FirstName,
-                MiddleName = request.MiddleName = "",
+                MiddleName = request.MiddleName,
                 LastName = request.LastName,
-                ExtensionName = request.ExtensionName = "",
+                ExtensionName = request.ExtensionName,
                 BirthDate = request.BirthDate,
                 BirthPlace = request.BirthPlace,
                 SexAtBirth = request.SexAtBirth,
                 CivilStatusID = request.CivilStatusId,
                 IsFilipino = request.IsFilipino,
                 IsDualCitizen = request.IsDualCitizen,
-                ImageSource = request.ImageSource = ""
+                ImageSource = request.ImageSource
             };
             var createdEmployee = await _employeeRepository.AddAsync(newEmployee, cancellationToken);
 
